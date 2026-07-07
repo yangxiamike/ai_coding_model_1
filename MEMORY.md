@@ -24,6 +24,14 @@
 - Baostock 限制：无 1min（最细 5min），不支持 A 股辅助表（daily_basic/stock_st/suspend_d/stk_limit），调用报 NotImplementedError。
 - 参考 zer0share 架构，因 py3.11+ 在 3.8 重写，不复用代码。
 
+## 算法模块（核心，已设计 2026-07-06，未实现）
+- 核心模块不走三层（AGENTS.md §6 已改）：每类算法独立文件夹（含指标/特征/预处理/模型/训练/预测类），对外只暴露预测类契约 `__init__(model_file)`+`predict(df)`+`data_requirement` 成员变量。
+- `DataRequirement`(codes/fields/freq/window/adjust/extras) 是核心解耦点：算法声明要哪些标的的哪些信息，业务壳(training/live_predict/backtest)据此向 data 取数喂 predict，保证训练/推断/回测取数一致。算法不 import data。
+- 参考 transformer_user（BTC AUC0.7）重写：双层 BertEncoder + 108 指标涨跌幅特征 + FieldMeta 自动判离散/连续建词表 + 未来 k 步涨跌穿阈值标签。
+- 结构：`algo/predictor.py`(契约+DataRequirement+load 工厂) + `algo/transformer/`(indicator/feature/preprocess/model/train/predictor)。换算法开新文件夹，load 按 meta.algorithm 动态定位。
+- 关键改造：去 cloudpickle 闭包改 meta.yaml+权重可重建；超参进 config.yaml；接 df 不读 csv；指标库并入算法特征层（DEMAND"指标库"需求由此满足）。
+- 依赖需补装：transformers/tensorboard/tqdm/scikit-learn/numba(可选)。
+
 ## 代码与文档原则
 - 高内聚低耦合、组合不继承、鸭子类型(Protocol)、配置进 config.yaml 禁硬编码、标准 logging、3.8 兼容(Optional[X])。
 - §6 模块模式（Module as Singleton）：工具/单例用 .py 模块承载函数+状态，不写 Class；仅多态(日历/数据源)与 dataclass(StandardBar/SyncTask) 保留 Class。无 init/is_initialized 入口，状态模块级惰性组装。
@@ -38,4 +46,4 @@
 - **原则推到根**：用户指一处先问"该点所属抽象层是否整体错"，一次挖到底。原则优先级 > 行业惯例(pro_api/create_engine 等是反例)。
 
 ## 待领导拍板（设计未决，见 worklog/WORKLOG.md）
-1. 第一版 A 股标的范围 2. tushare 积分等级(分钟 stk_mins≥5000) 3. 成本模型参数 4. 序列模型本机路径
+1. 第一版 A 股标的范围 2. tushare 积分等级(分钟 stk_mins≥5000) 3. 成本模型参数（序列模型路径已定：参考 transformer_user 重写为 algo）
