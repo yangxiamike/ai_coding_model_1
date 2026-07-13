@@ -18,3 +18,5 @@
 - 引擎启动接口: 生成器式，类似torch训练循环逐步推进；yield+send交互——ctx=next(gen), target=strategy.decide(ctx), next_ctx=gen.send(target)，引擎只做数据供给+撮合记账，预估模块可替换（策略/模型/RL agent）
 - yield内容: 裸ctx dict{ohlcv_df, fetch, positions, cash}，与预估模块输入一致，不附带trades/nav/元信息
 - 净值/绩效: 上层自己累积，引擎不维护任何历史，纯粹作为RL环境（env），无状态
+- 引擎定位: 不只用于回测，还需内聚实时预测能力（回测+实盘统一引擎）
+- 目录结构: engine/和backtest/同级（与data/同级），engine是独立核心模块，backtest是回测辅助层
