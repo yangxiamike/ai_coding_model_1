@@ -40,8 +40,11 @@ def _run_backtest(bars, fetch_fn, decision_freq, start, end, commission_fn):
     loader, decision_times = load_backtest(bars, decision_freq, start, end)
     state = initial_state()
 
+    # 修复 2026-07-14: 原为 loader.__iter__().__next__() 每次循环创建新迭代器，
+    # 导致永远只取第一个 batch，数据无法推进。
+    loader_iter = iter(loader)
     ts_idx = 0
-    next_data = next(loader.__iter__(), None)
+    next_data = next(loader_iter, None)
 
     while ts_idx < len(decision_times):
         t = decision_times[ts_idx]
@@ -70,11 +73,9 @@ def _run_backtest(bars, fetch_fn, decision_freq, start, end, commission_fn):
 
         ts_idx += 1
         try:
-            next_data = loader.__iter__().__next__()
+            next_data = next(loader_iter)
         except StopIteration:
             next_data = None
-
-    provider.close()
 
 
 def _run_live(bars, fetch_fn, decision_freq, start, commission_fn):

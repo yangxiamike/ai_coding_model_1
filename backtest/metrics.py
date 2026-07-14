@@ -24,7 +24,10 @@ def calc(nav_df: pd.DataFrame) -> pd.DataFrame:
     drawdown = (nav - cummax) / cummax
     max_drawdown = np.min(drawdown)
 
-    peak_idx = np.argmin(drawdown)
+    # 修复 2026-07-14: 原 peak_idx = np.argmin(drawdown) 找到的是谷底而非峰值，
+    # 回撤持续时间应从峰值算到恢复点。现改为从谷底向上找前序峰值。
+    trough_idx = np.argmin(drawdown)
+    peak_idx = np.argmax(nav[:trough_idx + 1])
     recovery_idx = np.argmax(nav[peak_idx:]) + peak_idx if peak_idx < len(nav) - 1 else len(nav) - 1
     max_dd_duration = recovery_idx - peak_idx
 

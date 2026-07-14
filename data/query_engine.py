@@ -82,6 +82,7 @@ def select_one(
 
 def execute(sql: str, params: Optional[list] = None) -> pd.DataFrame:
     """执行任意 DuckDB SQL 并返回 DataFrame（高级用法）。"""
+    # 修复 2026-07-14: 原内层 if not params 恒为 False（死代码），简化为直接分派。
     if params:
-        return duckdb.query(sql).fetchdf() if not params else duckdb.execute(sql, params).fetchdf()
+        return duckdb.execute(sql, params).fetchdf()
     return duckdb.query(sql).fetchdf()

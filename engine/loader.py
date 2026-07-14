@@ -36,10 +36,12 @@ def load_live(bars: List[Dict], decision_freq: str,
         name = bar["name"]
         ts_code = bar["ts_code"]
         shift_start = _shift_window(current_ts, window, freq)
-        fetch_fn = freq_func_map.get(freq)
-        if fetch_fn is None:
+        # 修复 2026-07-14: 原为 fetch_fn = ... 与形参 fetch_fn 重名遮蔽，
+        # 导致策略自定义抓取逻辑在实盘中从未生效。
+        provider_fn = freq_func_map.get(freq)
+        if provider_fn is None:
             raise ValueError(f"不支持频率: {freq}")
-        df = fetch_fn([ts_code], shift_start, current_ts, adjust="qfq")
+        df = provider_fn([ts_code], shift_start, current_ts, adjust="qfq")
         ts_col = "trade_date" if freq == "day" else "trade_time"
         df = df[df[ts_col] <= current_ts].tail(window)
         result = df[["name", ts_col, "open", "high", "low",
@@ -98,10 +100,10 @@ def _generate_decision_times(freq: str, start: str, end: str) -> List[str]:
     elif freq in ("1min", "60min"):
         trading_days = meta_store.get_trading_days(exchange, start, end)
         if freq == "60min":
+            # 修复 2026-07-14: 原为 30 分钟间隔 8 个/天，改为 60 分钟间隔 4 个/天。
             times = []
             for d in trading_days:
-                for h in ["10:00", "10:30", "11:00", "11:30",
-                           "13:00", "13:30", "14:00", "14:30"]:
+                for h in ["10:30", "11:30", "14:00", "15:00"]:
                     times.append(f"{d} {h}")
             return times
         else:
