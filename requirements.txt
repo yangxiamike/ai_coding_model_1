@@ -12,3 +12,7 @@ pyyaml>=5.4                    # 配置读取
 
 # 训练/推断（可选，后续模块使用）
 torch>=2.3.1                   # GPU 训练
+transformers>=4.30              # BERT Encoder（seq_model）
+cloudpickle>=2.2                # 模型打包序列化（seq_model）
+numba>=0.57                     # 技术指标加速（seq_model）
+tensorboard>=2.14               # 训练可视化（seq_model）

@@ -20,3 +20,16 @@
 - 净值/绩效: 上层自己累积，引擎不维护任何历史，纯粹作为RL环境（env），无状态
 - 引擎定位: 不只用于回测，还需内聚实时预测能力（回测+实盘统一引擎）
 - 目录结构: engine/和backtest/同级（与data/同级），engine是独立核心模块，backtest是回测辅助层
+
+## 2026-07-15 seq_model迁移+沪深300实验
+
+- 迁移范围: transformer_user/core/(model/modules/field_meta/utils) + algo_pack + exp1_functional → seq_model/(model/modules/field_meta/utils/algo_pack/indicators)
+- 新增: seq_model/config.yaml+config.py（模型超参+get_declare）、seq_model/trade_label.py（交易标签生成，与引擎撮合逻辑对齐）
+- trade_label.compute_trailing_stop_target: 买入价=open[t+1], 卖出价=open[i+1]（下一根开盘价成交，与engine一致），T+1约束买入当天不可卖，trailing stop从peak回撤0.9%，持仓超3交易日时间止损，commission_fn由实验脚本从engine传入
+- indicators仅保留纯技术指标函数，trade_label独立存放交易规则相关标签生成
+- 实验: exp_hs300.py，沪深300ETF(510300.SH)，WholeTransformer二分类，BCEWithLogitsLoss
+- 初始用provider.hour小时线，数据量不足（train 123行）→ 改为provider.minute分钟线
+- 新增 seq_model/trade_label.py（其他目标函数：binary_updown, categorical_return, multilabel_return）
+- 新增 seq_model/builder.py：make_whole_transformer工厂函数 + SeqDataset，从exp_hs300.py抽离复用
+- MEMORY.md 新增规则（迁移流程/数据泄漏/职责分离/流程规则），记入前须与领导问答确认
+- AGENTS.md 新增第四节「代码迁移规范+训练/测试切分」, MEMORY规则增加确认前置

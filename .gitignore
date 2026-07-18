@@ -9,3 +9,6 @@ tmp*
 
 *.yaml
 *.duckdb
+
+*.pkl
+events.out.tf*
