@@ -1,5 +1,11 @@
 # 数据模块设计文档
 
+> zer0share 不可变日频截面训练基础包是独立的显式构建/离线读取链路，默认使用
+> 数据方维护的零选择 canonical preset；日常主流程是数据方交付完整 package，
+> 合作方只 `open_dataset(path).read_split(...)`。最短用法、数据契约和 manifest 见
+> [ZER0SHARE_DATASETS.md](ZER0SHARE_DATASETS.md)。它不会调用本页旧
+> `provider/sync_runner` 的回源或同步路径。
+
 ## 1. 这模块干嘛的
 
 给你要的行情数据。你说"要 600900 近一周小时线"，它给你一张表，你不用管数据从哪来、存哪、要不要上网拉。

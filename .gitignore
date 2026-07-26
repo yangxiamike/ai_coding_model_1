@@ -8,6 +8,7 @@ tmp*
 *.npy
 
 *.yaml
+!data/dataset_package/standard_daily_v1.yaml
 *.duckdb
 
 *.pkl

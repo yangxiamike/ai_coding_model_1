@@ -1,91 +1,84 @@
-"""数据模块统一入口（客户端层）。
+"""数据模块统一公共入口。
 
-按 AGENTS.md 规范：客户端文件以 `_cli.py` 结尾，作为模块统一入口，
-`import data.data_cli` 即可调用本模块全部对外能力。
-
-对外暴露两个对称面（双面共存）：
-- **查询面 `provider`**：按需回源 + 本地缓存，对上层无感。import 即得数据，
-  缺数据 provider 内部自动回源补齐，命中直读不回源。无 sync/refresh/status 入口。
-- **同步面 `sync_runner`**：函数式对称的显式预热入口，供定期同步（cron /
-  脚本触发，模块不内置调度器）或批量拉取。调后不返回 df，只落库。
-
-二者共用 sync_jobs 补缺内核，差异仅在调用后是否读本地返回。
-
-另导出：数据源契约（DataSource / AShareDataSource / StandardBar，供上层
-注入自定义源）、日历（TradingCalendar / AlwaysOpenCalendar）、常量（频率 /
-复权 / 标的类别）。
-
-模块加载即就绪（AGENTS.md §6）：状态由 sync_jobs 模块单例惰性组装，配置
-由同层 config.py 用 __file__ 自定位 config.yaml 读取，无需 init。
-
-用法：
-    from data import provider, sync_runner
-    df = provider.daily(["600000.SH"], "20240101", "20240601")  # 查询面
-    sync_runner.daily(["600000.SH"], "20240101", "20240601")    # 同步面（预热）
+数据包 API 轻量加载；旧 provider/sync_runner、数据源与日历符号按首次访问
+惰性导入。因此只读 ``open_dataset`` 不依赖旧 config 或外部行情源。
 """
-from data.provider import (
-    close,
-    minute, hour, daily, latest_bar,
-    daily_basic, adj_factor, stk_limit, stock_st, suspend_d,
-    trade_cal, stock_list, is_trading_day,
-    export,
-)
-from data.sync_runner import (
-    all as sync_all,
-    minute as sync_minute,
-    daily as sync_daily,
-    daily_basic as sync_daily_basic,
-    adj_factor as sync_adj_factor,
-    stk_limit as sync_stk_limit,
-    stock_st as sync_stock_st,
-    suspend_d as sync_suspend_d,
-    trade_cal as sync_trade_cal,
-    stock_list as sync_stock_list,
-)
-from data.datasource.interface import (
-    DataSource,
-    AShareDataSource,
-    StandardBar,
-)
-from data.calendar import TradingCalendar, AlwaysOpenCalendar
-from data.schema import (
-    FREQ_MIN1, FREQ_MIN60, FREQ_DAY,
-    ADJ_NONE, ADJ_QFQ, ADJ_HFQ,
-    SEC_STOCK, SEC_ETF, SEC_CB, SEC_CRYPTO,
+import importlib
+
+from data.dataset_package import (
+    DatasetPackage as DatasetPackage,
+    DatasetSpec as DatasetSpec,
+    STANDARD_DAILY_PRESET_NAME as STANDARD_DAILY_PRESET_NAME,
+    STANDARD_DAILY_PRESET_VERSION as STANDARD_DAILY_PRESET_VERSION,
+    build_dataset as build_dataset,
+    build_standard_dataset as build_standard_dataset,
+    load_spec as load_spec,
+    open_dataset as open_dataset,
+    standard_daily_spec as standard_daily_spec,
 )
 
-# provider 模块（便于 `from data import provider; provider.fn()`）
-from data import provider, sync_runner  # noqa: F401
+_PROVIDER_NAMES = {
+    "close", "minute", "hour", "daily", "latest_bar", "daily_basic",
+    "adj_factor", "stk_limit", "stock_st", "suspend_d", "trade_cal",
+    "stock_list", "is_trading_day", "export",
+}
+_SYNC_NAMES = {
+    "sync_all": "all",
+    "sync_minute": "minute",
+    "sync_daily": "daily",
+    "sync_daily_basic": "daily_basic",
+    "sync_adj_factor": "adj_factor",
+    "sync_stk_limit": "stk_limit",
+    "sync_stock_st": "stock_st",
+    "sync_suspend_d": "suspend_d",
+    "sync_trade_cal": "trade_cal",
+    "sync_stock_list": "stock_list",
+}
+_INTERFACE_NAMES = {"DataSource", "AShareDataSource", "StandardBar"}
+_CALENDAR_NAMES = {"TradingCalendar", "AlwaysOpenCalendar"}
+_SCHEMA_NAMES = {
+    "FREQ_MIN1", "FREQ_MIN60", "FREQ_DAY",
+    "ADJ_NONE", "ADJ_QFQ", "ADJ_HFQ",
+    "SEC_STOCK", "SEC_ETF", "SEC_CB", "SEC_CRYPTO",
+}
+_PACKAGE_VALUES = {
+    "DatasetPackage": DatasetPackage,
+    "DatasetSpec": DatasetSpec,
+    "STANDARD_DAILY_PRESET_NAME": STANDARD_DAILY_PRESET_NAME,
+    "STANDARD_DAILY_PRESET_VERSION": STANDARD_DAILY_PRESET_VERSION,
+    "build_dataset": build_dataset,
+    "build_standard_dataset": build_standard_dataset,
+    "load_spec": load_spec,
+    "open_dataset": open_dataset,
+    "standard_daily_spec": standard_daily_spec,
+}
+_PACKAGE_NAMES = set(_PACKAGE_VALUES)
 
-__all__ = [
-    # 查询面
-    "close",
-    "minute", "hour", "daily", "latest_bar",
-    "daily_basic", "adj_factor", "stk_limit", "stock_st", "suspend_d",
-    "trade_cal", "stock_list", "is_trading_day",
-    "export",
-    # 同步面（带 sync_ 前缀，避免与查询面同名冲突）
-    "sync_all",
-    "sync_minute", "sync_daily", "sync_daily_basic",
-    "sync_adj_factor", "sync_stk_limit", "sync_stock_st",
-    "sync_suspend_d", "sync_trade_cal", "sync_stock_list",
-    # 子模块
-    "provider",
-    "sync_runner",
-    # 契约 / 常量
-    "DataSource",
-    "AShareDataSource",
-    "StandardBar",
-    "TradingCalendar",
-    "AlwaysOpenCalendar",
-    "FREQ_MIN1",
-    "FREQ_MIN60",
-    "FREQ_DAY",
-    "ADJ_NONE",
-    "ADJ_QFQ",
-    "ADJ_HFQ",
-    "SEC_STOCK",
-    "SEC_ETF",
-    "SEC_CB",
-    "SEC_CRYPTO",
-]
+__all__ = sorted(
+    _PROVIDER_NAMES
+    | set(_SYNC_NAMES)
+    | _INTERFACE_NAMES
+    | _CALENDAR_NAMES
+    | _SCHEMA_NAMES
+    | _PACKAGE_NAMES
+    | {"provider", "sync_runner"}
+)
+
+
+def __getattr__(name):
+    if name in {"provider", "sync_runner"}:
+        value = importlib.import_module(f"data.{name}")
+    elif name in _PROVIDER_NAMES:
+        value = getattr(importlib.import_module("data.provider"), name)
+    elif name in _SYNC_NAMES:
+        value = getattr(importlib.import_module("data.sync_runner"), _SYNC_NAMES[name])
+    elif name in _INTERFACE_NAMES:
+        value = getattr(importlib.import_module("data.datasource.interface"), name)
+    elif name in _CALENDAR_NAMES:
+        value = getattr(importlib.import_module("data.calendar"), name)
+    elif name in _SCHEMA_NAMES:
+        value = getattr(importlib.import_module("data.schema"), name)
+    else:
+        raise AttributeError(f"module 'data.data_cli' has no attribute {name!r}")
+    globals()[name] = value
+    return value

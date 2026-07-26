@@ -1,24 +1,61 @@
-"""数据模块包。
+"""数据公共入口。
 
-对外暴露两个对称面（双面共存）：
-- **查询面 `provider`**：按需回源 + 本地缓存，对上层无感。import 即得数据，
-  缺数据 provider 内部自动回源补齐，命中直读不回源。无 sync/refresh/status 入口。
-- **同步面 `sync_runner`**：函数式对称的显式预热入口，供定期同步（cron /
-  脚本触发，模块不内置调度器）或批量拉取。调后不返回 df，只落库。
-
-二者共用 sync_jobs 补缺内核，差异仅在调用后是否读本地返回 df。
-
-模块加载即就绪（AGENTS.md §6）：运行时状态由 sync_jobs 模块单例惰性组装，
-配置由同层 config.py 用 __file__ 自定位 config.yaml 读取，无需 init。
-
-统一入口为 `data.data_cli`（见 AGENTS.md 客户端规范）；本 `__init__` re-export
-其公开符号，并暴露 `provider` / `sync_runner` 模块便于 `provider.fn()` 调用。
-
-推荐用法：
-    from data import provider, sync_runner
-    df = provider.daily(["600000.SH"], "20240101", "20240601")  # 查询
-    sync_runner.daily(["600000.SH"], "20240101", "20240601")    # 预热（可选）
+zer0share 数据包入口保持轻量、离线可导入。旧 provider/sync_runner API 在首次
+访问时才加载，避免 ``open_dataset`` 依赖旧 data/config.yaml 或外部数据源。
 """
-from data.data_cli import *  # noqa: F401,F403
-from data.data_cli import __all__  # noqa: F401
-from data import provider, sync_runner  # noqa: F401
+import importlib
+
+from data.dataset_package import (
+    DatasetPackage as DatasetPackage,
+    DatasetSpec as DatasetSpec,
+    STANDARD_DAILY_PRESET_NAME as STANDARD_DAILY_PRESET_NAME,
+    STANDARD_DAILY_PRESET_VERSION as STANDARD_DAILY_PRESET_VERSION,
+    build_dataset as build_dataset,
+    build_standard_dataset as build_standard_dataset,
+    load_spec as load_spec,
+    open_dataset as open_dataset,
+    standard_daily_spec as standard_daily_spec,
+)
+
+_PACKAGE_EXPORT_VALUES = {
+    "DatasetPackage": DatasetPackage,
+    "DatasetSpec": DatasetSpec,
+    "build_dataset": build_dataset,
+    "build_standard_dataset": build_standard_dataset,
+    "load_spec": load_spec,
+    "open_dataset": open_dataset,
+    "standard_daily_spec": standard_daily_spec,
+    "STANDARD_DAILY_PRESET_NAME": STANDARD_DAILY_PRESET_NAME,
+    "STANDARD_DAILY_PRESET_VERSION": STANDARD_DAILY_PRESET_VERSION,
+}
+_PACKAGE_EXPORTS = set(_PACKAGE_EXPORT_VALUES)
+
+_LEGACY_EXPORTS = {
+    "close",
+    "minute", "hour", "daily", "latest_bar",
+    "daily_basic", "adj_factor", "stk_limit", "stock_st", "suspend_d",
+    "trade_cal", "stock_list", "is_trading_day", "export",
+    "sync_all", "sync_minute", "sync_daily", "sync_daily_basic",
+    "sync_adj_factor", "sync_stk_limit", "sync_stock_st",
+    "sync_suspend_d", "sync_trade_cal", "sync_stock_list",
+    "DataSource", "AShareDataSource", "StandardBar",
+    "TradingCalendar", "AlwaysOpenCalendar",
+    "FREQ_MIN1", "FREQ_MIN60", "FREQ_DAY",
+    "ADJ_NONE", "ADJ_QFQ", "ADJ_HFQ",
+    "SEC_STOCK", "SEC_ETF", "SEC_CB", "SEC_CRYPTO",
+}
+
+__all__ = sorted(_PACKAGE_EXPORTS | _LEGACY_EXPORTS | {"provider", "sync_runner"})
+
+
+def __getattr__(name):
+    if name in {"provider", "sync_runner"}:
+        module = importlib.import_module(f"data.{name}")
+        globals()[name] = module
+        return module
+    if name in _LEGACY_EXPORTS:
+        module = importlib.import_module("data.data_cli")
+        value = getattr(module, name)
+        globals()[name] = value
+        return value
+    raise AttributeError(f"module 'data' has no attribute {name!r}")
