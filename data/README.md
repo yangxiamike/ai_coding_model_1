@@ -2,7 +2,8 @@
 
 > zer0share 不可变日频截面训练基础包是独立的显式构建/离线读取链路，默认使用
 > 数据方维护的零选择 canonical preset；日常主流程是数据方交付完整 package，
-> 合作方只 `open_dataset(path).read_split(...)`。最短用法、数据契约和 manifest 见
+> 合作方只 `open_dataset(path).read()`，再按自己的实验方案切分。最短用法、
+> 合成 demo、数据契约和 manifest 见
 > [ZER0SHARE_DATASETS.md](ZER0SHARE_DATASETS.md)。它不会调用本页旧
 > `provider/sync_runner` 的回源或同步路径。
 

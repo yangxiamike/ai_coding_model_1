@@ -9,17 +9,34 @@
 from data import open_dataset
 
 package = open_dataset("/delivered/ashare_daily_cross_section_v1/<dataset_id>")
-train_df = package.read_split("train")
-validation_df = package.read_split("validation")
-test_df = package.read_split("test")
+panel_df = package.read()
 ```
 
-交付物是整个 `<dataset_id>/` 目录，包含 canonical panel、八张源表、三个
-split 边界、manifest、字段 schema 和全部 Parquet 文件校验和。目录可以复制或传输到另一台机器；不要只发送其中部分文件。
+交付物是整个 `<dataset_id>/` 目录，包含完整 canonical panel、八张源表、
+manifest、字段 schema 和全部 Parquet 文件校验和。目录可以复制或传输到另一台
+机器；不要只发送其中部分文件。
 
 `open_dataset()` 会在返回句柄前完成完整性与兼容性校验。它只读取该目录，不导入、不连接 zer0share，也不回源、同步或修改文件。
 
 返回值是按 `(trade_date, ts_code)` 稳定排序的 pandas DataFrame。这里不生成模型特征、标签、张量、PyTorch Dataset 或 DataLoader。
+标准包不预设 train/validation/test；合作方应结合自己的标签前瞻窗口和实验方案，
+在读取完整面板后自行切分。
+
+## 无 zer0share 的 demo
+
+仓库附带一个 116KB 左右的纯合成、已构建 package，用来先验证安装、离线读取和
+数据契约：
+
+```python
+from data import open_dataset
+
+package = open_dataset("data/demo/ashare_daily_cross_section_demo_v1")
+panel_df = package.read()
+```
+
+demo 包含 3 个交易日、3 个虚构代码，以及 ST、停牌缺日线、复牌、涨停和复权
+因子变化示例。它完整包含八张源表、三个派生视图、manifest、schema 和校验和，
+不含真实证券数据。详见 `data/demo/README.md`。
 
 ## 可选流程：一键复现或更新
 
@@ -50,7 +67,7 @@ zer0share 仅在 build/reproduce/update 阶段需要。得到相同 dataset ID �
 - 双方各自安装、配置和维护 zer0share；模型仓库不携带 zer0share 数据库或真实数据包。
 - builder 只调用 `from zer0share import pro_api` 和八个只读查询方法，不调用同步、更新、下载或回源接口。
 - zer0share `config_path`、token、密码、输出绝对路径不写入 manifest，也不参与 spec hash 或 dataset ID。
-- 构建/复现/更新阶段才需要 zer0share。`open_dataset` 和 `read_split` 完全离线，不导入、不连接 zer0share。
+- 构建/复现/更新阶段才需要 zer0share。`open_dataset` 和 `read` 完全离线，不导入、不连接 zer0share。
 
 依赖由使用方安装：
 
@@ -79,9 +96,8 @@ client = pro_api(config_path="/local/private/zer0share-config.toml")
 - 原始层：`daily` 保存统一字段/dtype 后的未复权日线，`adj_factor` 单独保存。
 - HFQ：`open/high/low/close/pre_close × 当日 adj_factor`；`change/pct_chg` 按复权后的 close/pre_close 重算，`vol/amount` 保持源值。
 - 默认消费视图：`training_view_hfq`。
-- splits：train `20100101..20221230`，validation `20230201..20231229`，test `20240201..20251231`。区间端点包含且互不重叠，间隔预留给后续标签逻辑。
-
-训练侧生成标签时仍需按具体标签最大前瞻窗口检查 split 间隔，本包不替训练侧决定标签泄漏边界。
+- 数据切分：标准包不固化 split，只交付 2010-01-01 至 2025-12-31 的完整面板。
+  合作方生成标签后，按具体标签最大前瞻窗口自行设计切分和泄漏隔离。
 
 ## DataFrame 契约
 
@@ -130,7 +146,10 @@ builder 按自然年读取六张大表、派生 panel 并立即写分区，避�
 
 dataset ID 由数据集名称、schema 版本、无机器路径的 spec hash 和八表规范化源快照指纹组成。相同 preset、builder/schema 与源快照得到相同 ID 和逻辑行/schema；不同 PyArrow 版本不承诺 Parquet 文件逐字节一致。
 
-manifest 记录 builder/git/zer0share 版本、UTC 构建时间、日期覆盖、股票池、splits、HFQ 契约、字段 schema、每文件/分区行数、字节数和 SHA256。`open_dataset` 会立即拒绝不兼容版本、缺失/额外文件、行数或 schema 不一致、文件校验和错误和不安全路径。
+manifest 记录 builder/git/zer0share 版本、UTC 构建时间、日期覆盖、股票池、HFQ
+契约、字段 schema、每文件/分区行数、字节数和 SHA256。标准包的 `splits` 为
+空对象；通用 spec 仍可为其他数据产品声明可选切分。`open_dataset` 会立即拒绝
+不兼容版本、缺失/额外文件、行数或 schema 不一致、文件校验和错误和不安全路径。
 
 ## 通用 spec（高级用法）
 

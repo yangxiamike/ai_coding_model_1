@@ -83,12 +83,13 @@ class DatasetPackageTests(unittest.TestCase):
             client=client or FakePro(),
         )
 
-    def test_builds_canonical_package_and_reads_split(self):
+    def test_builds_canonical_package_and_reads_complete_panel(self):
         client = FakePro()
         path = self.build(client)
         package = open_dataset(path)
         self.assertEqual(package.manifest["spec"]["preset"]["version"], "1.0.0")
         self.assertEqual(package.default_view, "training_view_hfq")
+        self.assertEqual(package.manifest["splits"], {})
         self.assertEqual(
             set(name for name, _ in client.calls),
             {
@@ -110,23 +111,23 @@ class DatasetPackageTests(unittest.TestCase):
         self.assertEqual(raw_open, 11.0)
         self.assertEqual(hfq_open, 22.0)
 
-        test = package.read_split("test")
-        suspended = test[
-            (test["trade_date"] == "20240202")
-            & (test["ts_code"] == "600000.SH")
+        panel = package.read()
+        suspended = panel[
+            (panel["trade_date"] == "20240202")
+            & (panel["ts_code"] == "600000.SH")
         ].iloc[0]
         self.assertTrue(suspended["is_suspended"])
         self.assertFalse(suspended["has_daily"])
         self.assertTrue(suspended["has_adj_factor"])
         self.assertEqual(suspended["adj_factor"], 2.0)
         self.assertTrue(pd.isna(suspended["open"]))
-        self.assertEqual(len(test), 6)
+        self.assertEqual(len(panel), 9)
         self.assertEqual(
-            list(test[["trade_date", "ts_code"]].itertuples(index=False, name=None)),
-            sorted(test[["trade_date", "ts_code"]].itertuples(index=False, name=None)),
+            list(panel[["trade_date", "ts_code"]].itertuples(index=False, name=None)),
+            sorted(panel[["trade_date", "ts_code"]].itertuples(index=False, name=None)),
         )
-        projected = package.read_split("test", columns=["open"])
-        self.assertEqual(len(projected), 6)
+        projected = package.read(columns=["open"])
+        self.assertEqual(len(projected), 9)
         self.assertEqual(list(projected.columns), ["open"])
         adjusted = hfq[
             (hfq["trade_date"] == "20240202") & (hfq["ts_code"] == "000001.SZ")
@@ -134,8 +135,8 @@ class DatasetPackageTests(unittest.TestCase):
         self.assertEqual(adjusted["pre_close"], 21.0)
         self.assertEqual(adjusted["change"], 2.0)
         self.assertAlmostEqual(adjusted["pct_chg"], (23.0 / 21.0 - 1.0) * 100.0)
-        not_limit = test[
-            (test["trade_date"] == "20240202") & (test["ts_code"] == "430001.BJ")
+        not_limit = panel[
+            (panel["trade_date"] == "20240202") & (panel["ts_code"] == "430001.BJ")
         ].iloc[0]
         self.assertFalse(not_limit["is_at_up_limit"])
         self.assertFalse(not_limit["is_suspended"])
@@ -317,9 +318,34 @@ class DatasetPackageTests(unittest.TestCase):
         sys.modules.pop("zer0share", None)
         package = open_dataset(delivered)
         self.assertNotIn("zer0share", sys.modules)
-        self.assertEqual(len(package.read_split("test")), 6)
+        self.assertEqual(len(package.read()), 9)
         from data.data_cli import open_dataset as cli_open_dataset
         self.assertEqual(cli_open_dataset(delivered).dataset_id, package.dataset_id)
+
+    def test_committed_synthetic_demo_opens_offline(self):
+        demo = (
+            Path(__file__).parents[1]
+            / "data"
+            / "demo"
+            / "ashare_daily_cross_section_demo_v1"
+        )
+        sys.modules.pop("zer0share", None)
+        package = open_dataset(demo)
+        panel = package.read()
+        self.assertNotIn("zer0share", sys.modules)
+        self.assertEqual(package.manifest["splits"], {})
+        self.assertEqual(len(panel), 9)
+        self.assertEqual(
+            set(panel["ts_code"]),
+            {"999001.SZ", "999002.SH", "999003.BJ"},
+        )
+        suspended = panel[
+            (panel["trade_date"] == "20240104")
+            & (panel["ts_code"] == "999002.SH")
+        ].iloc[0]
+        self.assertTrue(suspended["is_suspended"])
+        self.assertFalse(suspended["has_daily"])
+        self.assertTrue(pd.isna(suspended["open"]))
 
     def test_failed_final_validation_leaves_no_temp_or_final_package(self):
         output = self.root / "forced-failure"

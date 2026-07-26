@@ -1,0 +1,1136 @@
+{
+  "adjustment": {
+    "change_policy": "recomputed_from_adjusted_close_and_pre_close",
+    "formula": "adjusted_price = raw_price * adj_factor",
+    "kind": "hfq",
+    "missing_policy": "no_forward_fill",
+    "price_columns": [
+      "open",
+      "high",
+      "low",
+      "close",
+      "pre_close"
+    ]
+  },
+  "artifacts": {
+    "adj_factor": {
+      "file_count": 1,
+      "files": [
+        "tables/adj_factor/year=2024/part-00000.parquet"
+      ],
+      "kind": "table",
+      "partitioning": [
+        "year"
+      ],
+      "primary_key": [
+        "trade_date",
+        "ts_code"
+      ],
+      "row_count": 9,
+      "schema": [
+        {
+          "name": "ts_code",
+          "nullable": true,
+          "type": "string"
+        },
+        {
+          "name": "trade_date",
+          "nullable": true,
+          "type": "string"
+        },
+        {
+          "name": "adj_factor",
+          "nullable": true,
+          "type": "double"
+        }
+      ],
+      "sort_order": [
+        "trade_date",
+        "ts_code"
+      ]
+    },
+    "daily": {
+      "file_count": 1,
+      "files": [
+        "tables/daily/year=2024/part-00000.parquet"
+      ],
+      "kind": "table",
+      "partitioning": [
+        "year"
+      ],
+      "primary_key": [
+        "trade_date",
+        "ts_code"
+      ],
+      "row_count": 8,
+      "schema": [
+        {
+          "name": "ts_code",
+          "nullable": true,
+          "type": "string"
+        },
+        {
+          "name": "trade_date",
+          "nullable": true,
+          "type": "string"
+        },
+        {
+          "name": "open",
+          "nullable": true,
+          "type": "double"
+        },
+        {
+          "name": "high",
+          "nullable": true,
+          "type": "double"
+        },
+        {
+          "name": "low",
+          "nullable": true,
+          "type": "double"
+        },
+        {
+          "name": "close",
+          "nullable": true,
+          "type": "double"
+        },
+        {
+          "name": "pre_close",
+          "nullable": true,
+          "type": "double"
+        },
+        {
+          "name": "change",
+          "nullable": true,
+          "type": "double"
+        },
+        {
+          "name": "pct_chg",
+          "nullable": true,
+          "type": "double"
+        },
+        {
+          "name": "vol",
+          "nullable": true,
+          "type": "double"
+        },
+        {
+          "name": "amount",
+          "nullable": true,
+          "type": "double"
+        }
+      ],
+      "sort_order": [
+        "trade_date",
+        "ts_code"
+      ]
+    },
+    "daily_basic": {
+      "file_count": 1,
+      "files": [
+        "tables/daily_basic/year=2024/part-00000.parquet"
+      ],
+      "kind": "table",
+      "partitioning": [
+        "year"
+      ],
+      "primary_key": [
+        "trade_date",
+        "ts_code"
+      ],
+      "row_count": 9,
+      "schema": [
+        {
+          "name": "ts_code",
+          "nullable": true,
+          "type": "string"
+        },
+        {
+          "name": "trade_date",
+          "nullable": true,
+          "type": "string"
+        },
+        {
+          "name": "turnover_rate",
+          "nullable": true,
+          "type": "double"
+        },
+        {
+          "name": "turnover_rate_f",
+          "nullable": true,
+          "type": "double"
+        },
+        {
+          "name": "volume_ratio",
+          "nullable": true,
+          "type": "double"
+        },
+        {
+          "name": "pe",
+          "nullable": true,
+          "type": "double"
+        },
+        {
+          "name": "pe_ttm",
+          "nullable": true,
+          "type": "double"
+        },
+        {
+          "name": "pb",
+          "nullable": true,
+          "type": "double"
+        },
+        {
+          "name": "ps",
+          "nullable": true,
+          "type": "double"
+        },
+        {
+          "name": "ps_ttm",
+          "nullable": true,
+          "type": "double"
+        },
+        {
+          "name": "dv_ratio",
+          "nullable": true,
+          "type": "double"
+        },
+        {
+          "name": "dv_ttm",
+          "nullable": true,
+          "type": "double"
+        },
+        {
+          "name": "total_share",
+          "nullable": true,
+          "type": "double"
+        },
+        {
+          "name": "float_share",
+          "nullable": true,
+          "type": "double"
+        },
+        {
+          "name": "free_share",
+          "nullable": true,
+          "type": "double"
+        },
+        {
+          "name": "total_mv",
+          "nullable": true,
+          "type": "double"
+        },
+        {
+          "name": "circ_mv",
+          "nullable": true,
+          "type": "double"
+        }
+      ],
+      "sort_order": [
+        "trade_date",
+        "ts_code"
+      ]
+    },
+    "daily_hfq": {
+      "file_count": 1,
+      "files": [
+        "views/daily_hfq/year=2024/part-00000.parquet"
+      ],
+      "kind": "view",
+      "partitioning": [
+        "year"
+      ],
+      "primary_key": [
+        "trade_date",
+        "ts_code"
+      ],
+      "row_count": 8,
+      "schema": [
+        {
+          "name": "ts_code",
+          "nullable": true,
+          "type": "string"
+        },
+        {
+          "name": "trade_date",
+          "nullable": true,
+          "type": "string"
+        },
+        {
+          "name": "open",
+          "nullable": true,
+          "type": "double"
+        },
+        {
+          "name": "high",
+          "nullable": true,
+          "type": "double"
+        },
+        {
+          "name": "low",
+          "nullable": true,
+          "type": "double"
+        },
+        {
+          "name": "close",
+          "nullable": true,
+          "type": "double"
+        },
+        {
+          "name": "pre_close",
+          "nullable": true,
+          "type": "double"
+        },
+        {
+          "name": "change",
+          "nullable": true,
+          "type": "double"
+        },
+        {
+          "name": "pct_chg",
+          "nullable": true,
+          "type": "double"
+        },
+        {
+          "name": "vol",
+          "nullable": true,
+          "type": "double"
+        },
+        {
+          "name": "amount",
+          "nullable": true,
+          "type": "double"
+        },
+        {
+          "name": "adj_factor",
+          "nullable": true,
+          "type": "double"
+        }
+      ],
+      "sort_order": [
+        "trade_date",
+        "ts_code"
+      ]
+    },
+    "stk_limit": {
+      "file_count": 1,
+      "files": [
+        "tables/stk_limit/year=2024/part-00000.parquet"
+      ],
+      "kind": "table",
+      "partitioning": [
+        "year"
+      ],
+      "primary_key": [
+        "trade_date",
+        "ts_code"
+      ],
+      "row_count": 9,
+      "schema": [
+        {
+          "name": "ts_code",
+          "nullable": true,
+          "type": "string"
+        },
+        {
+          "name": "trade_date",
+          "nullable": true,
+          "type": "string"
+        },
+        {
+          "name": "pre_close",
+          "nullable": true,
+          "type": "double"
+        },
+        {
+          "name": "up_limit",
+          "nullable": true,
+          "type": "double"
+        },
+        {
+          "name": "down_limit",
+          "nullable": true,
+          "type": "double"
+        }
+      ],
+      "sort_order": [
+        "trade_date",
+        "ts_code"
+      ]
+    },
+    "stock_basic": {
+      "file_count": 1,
+      "files": [
+        "tables/stock_basic/part-00000.parquet"
+      ],
+      "kind": "table",
+      "partitioning": [],
+      "primary_key": [
+        "ts_code"
+      ],
+      "row_count": 3,
+      "schema": [
+        {
+          "name": "ts_code",
+          "nullable": true,
+          "type": "string"
+        },
+        {
+          "name": "symbol",
+          "nullable": true,
+          "type": "string"
+        },
+        {
+          "name": "name",
+          "nullable": true,
+          "type": "string"
+        },
+        {
+          "name": "area",
+          "nullable": true,
+          "type": "string"
+        },
+        {
+          "name": "industry",
+          "nullable": true,
+          "type": "string"
+        },
+        {
+          "name": "market",
+          "nullable": true,
+          "type": "string"
+        },
+        {
+          "name": "exchange",
+          "nullable": true,
+          "type": "string"
+        },
+        {
+          "name": "list_status",
+          "nullable": true,
+          "type": "string"
+        },
+        {
+          "name": "list_date",
+          "nullable": true,
+          "type": "string"
+        },
+        {
+          "name": "delist_date",
+          "nullable": true,
+          "type": "string"
+        },
+        {
+          "name": "is_hs",
+          "nullable": true,
+          "type": "string"
+        }
+      ],
+      "sort_order": [
+        "ts_code"
+      ]
+    },
+    "stock_st": {
+      "file_count": 1,
+      "files": [
+        "tables/stock_st/year=2024/part-00000.parquet"
+      ],
+      "kind": "table",
+      "partitioning": [
+        "year"
+      ],
+      "primary_key": [
+        "trade_date",
+        "ts_code"
+      ],
+      "row_count": 1,
+      "schema": [
+        {
+          "name": "ts_code",
+          "nullable": true,
+          "type": "string"
+        },
+        {
+          "name": "trade_date",
+          "nullable": true,
+          "type": "string"
+        },
+        {
+          "name": "name",
+          "nullable": true,
+          "type": "string"
+        },
+        {
+          "name": "type",
+          "nullable": true,
+          "type": "string"
+        },
+        {
+          "name": "type_name",
+          "nullable": true,
+          "type": "string"
+        }
+      ],
+      "sort_order": [
+        "trade_date",
+        "ts_code"
+      ]
+    },
+    "suspend_d": {
+      "file_count": 1,
+      "files": [
+        "tables/suspend_d/year=2024/part-00000.parquet"
+      ],
+      "kind": "table",
+      "partitioning": [
+        "year"
+      ],
+      "primary_key": [
+        "trade_date",
+        "ts_code",
+        "suspend_type",
+        "suspend_timing"
+      ],
+      "row_count": 2,
+      "schema": [
+        {
+          "name": "ts_code",
+          "nullable": true,
+          "type": "string"
+        },
+        {
+          "name": "trade_date",
+          "nullable": true,
+          "type": "string"
+        },
+        {
+          "name": "suspend_timing",
+          "nullable": true,
+          "type": "string"
+        },
+        {
+          "name": "suspend_type",
+          "nullable": true,
+          "type": "string"
+        }
+      ],
+      "sort_order": [
+        "trade_date",
+        "ts_code",
+        "suspend_type",
+        "suspend_timing"
+      ]
+    },
+    "trade_cal": {
+      "file_count": 1,
+      "files": [
+        "tables/trade_cal/year=2024/part-00000.parquet"
+      ],
+      "kind": "table",
+      "partitioning": [
+        "year"
+      ],
+      "primary_key": [
+        "exchange",
+        "cal_date"
+      ],
+      "row_count": 9,
+      "schema": [
+        {
+          "name": "exchange",
+          "nullable": true,
+          "type": "string"
+        },
+        {
+          "name": "cal_date",
+          "nullable": true,
+          "type": "string"
+        },
+        {
+          "name": "is_open",
+          "nullable": true,
+          "type": "int64"
+        },
+        {
+          "name": "pretrade_date",
+          "nullable": true,
+          "type": "string"
+        }
+      ],
+      "sort_order": [
+        "exchange",
+        "cal_date"
+      ]
+    },
+    "training_view_hfq": {
+      "file_count": 1,
+      "files": [
+        "views/training_view_hfq/year=2024/part-00000.parquet"
+      ],
+      "kind": "view",
+      "partitioning": [
+        "year"
+      ],
+      "primary_key": [
+        "trade_date",
+        "ts_code"
+      ],
+      "row_count": 9,
+      "schema": [
+        {
+          "name": "trade_date",
+          "nullable": true,
+          "type": "string"
+        },
+        {
+          "name": "ts_code",
+          "nullable": true,
+          "type": "string"
+        },
+        {
+          "name": "is_listed",
+          "nullable": true,
+          "type": "bool"
+        },
+        {
+          "name": "open",
+          "nullable": true,
+          "type": "double"
+        },
+        {
+          "name": "high",
+          "nullable": true,
+          "type": "double"
+        },
+        {
+          "name": "low",
+          "nullable": true,
+          "type": "double"
+        },
+        {
+          "name": "close",
+          "nullable": true,
+          "type": "double"
+        },
+        {
+          "name": "pre_close",
+          "nullable": true,
+          "type": "double"
+        },
+        {
+          "name": "change",
+          "nullable": true,
+          "type": "double"
+        },
+        {
+          "name": "pct_chg",
+          "nullable": true,
+          "type": "double"
+        },
+        {
+          "name": "vol",
+          "nullable": true,
+          "type": "double"
+        },
+        {
+          "name": "amount",
+          "nullable": true,
+          "type": "double"
+        },
+        {
+          "name": "adj_factor",
+          "nullable": true,
+          "type": "double"
+        },
+        {
+          "name": "has_daily",
+          "nullable": true,
+          "type": "bool"
+        },
+        {
+          "name": "has_adj_factor",
+          "nullable": true,
+          "type": "bool"
+        },
+        {
+          "name": "turnover_rate",
+          "nullable": true,
+          "type": "double"
+        },
+        {
+          "name": "turnover_rate_f",
+          "nullable": true,
+          "type": "double"
+        },
+        {
+          "name": "volume_ratio",
+          "nullable": true,
+          "type": "double"
+        },
+        {
+          "name": "pe",
+          "nullable": true,
+          "type": "double"
+        },
+        {
+          "name": "pe_ttm",
+          "nullable": true,
+          "type": "double"
+        },
+        {
+          "name": "pb",
+          "nullable": true,
+          "type": "double"
+        },
+        {
+          "name": "ps",
+          "nullable": true,
+          "type": "double"
+        },
+        {
+          "name": "ps_ttm",
+          "nullable": true,
+          "type": "double"
+        },
+        {
+          "name": "dv_ratio",
+          "nullable": true,
+          "type": "double"
+        },
+        {
+          "name": "dv_ttm",
+          "nullable": true,
+          "type": "double"
+        },
+        {
+          "name": "total_share",
+          "nullable": true,
+          "type": "double"
+        },
+        {
+          "name": "float_share",
+          "nullable": true,
+          "type": "double"
+        },
+        {
+          "name": "free_share",
+          "nullable": true,
+          "type": "double"
+        },
+        {
+          "name": "total_mv",
+          "nullable": true,
+          "type": "double"
+        },
+        {
+          "name": "circ_mv",
+          "nullable": true,
+          "type": "double"
+        },
+        {
+          "name": "has_daily_basic",
+          "nullable": true,
+          "type": "bool"
+        },
+        {
+          "name": "is_st",
+          "nullable": true,
+          "type": "bool"
+        },
+        {
+          "name": "is_suspended",
+          "nullable": true,
+          "type": "bool"
+        },
+        {
+          "name": "raw_up_limit",
+          "nullable": true,
+          "type": "double"
+        },
+        {
+          "name": "raw_down_limit",
+          "nullable": true,
+          "type": "double"
+        },
+        {
+          "name": "is_at_up_limit",
+          "nullable": true,
+          "type": "bool"
+        },
+        {
+          "name": "is_at_down_limit",
+          "nullable": true,
+          "type": "bool"
+        }
+      ],
+      "sort_order": [
+        "trade_date",
+        "ts_code"
+      ]
+    },
+    "universe_history": {
+      "file_count": 1,
+      "files": [
+        "views/universe_history/year=2024/part-00000.parquet"
+      ],
+      "kind": "view",
+      "partitioning": [
+        "year"
+      ],
+      "primary_key": [
+        "trade_date",
+        "ts_code"
+      ],
+      "row_count": 9,
+      "schema": [
+        {
+          "name": "trade_date",
+          "nullable": true,
+          "type": "string"
+        },
+        {
+          "name": "ts_code",
+          "nullable": true,
+          "type": "string"
+        },
+        {
+          "name": "is_listed",
+          "nullable": true,
+          "type": "bool"
+        }
+      ],
+      "sort_order": [
+        "trade_date",
+        "ts_code"
+      ]
+    }
+  },
+  "builder": {
+    "code_version": "79b6a0f905a8f03fe9b30d2588c5016ab6b4fef6",
+    "version": "1.0.0"
+  },
+  "built_at_utc": "2026-07-26T05:28:18.489832+00:00",
+  "dataset_id": "ashare_daily_cross_section_demo_v1-1_0_0-1e29d3006414-50a75177a62d",
+  "dataset_schema_version": "1.0.0",
+  "date_coverage": {
+    "end": "20240104",
+    "start": "20240102"
+  },
+  "default_view": "training_view_hfq",
+  "files": [
+    {
+      "artifact": "adj_factor",
+      "bytes": 2584,
+      "partition": {
+        "year": "2024"
+      },
+      "path": "tables/adj_factor/year=2024/part-00000.parquet",
+      "rows": 9,
+      "sha256": "4617303c1754e6c542d845e27304fc392f22a763cc3d5f4e7771d14b36a55f66"
+    },
+    {
+      "artifact": "daily",
+      "bytes": 7865,
+      "partition": {
+        "year": "2024"
+      },
+      "path": "tables/daily/year=2024/part-00000.parquet",
+      "rows": 8,
+      "sha256": "6847b0e15732034015beb4d9c3cfa8322ac6f19c635fad6889e3180a27c8b2f8"
+    },
+    {
+      "artifact": "daily_basic",
+      "bytes": 11897,
+      "partition": {
+        "year": "2024"
+      },
+      "path": "tables/daily_basic/year=2024/part-00000.parquet",
+      "rows": 9,
+      "sha256": "6f1681abb3b54211ead5a3cddcaa28b353f84b921edeb3133ff150bb084e7833"
+    },
+    {
+      "artifact": "stk_limit",
+      "bytes": 4012,
+      "partition": {
+        "year": "2024"
+      },
+      "path": "tables/stk_limit/year=2024/part-00000.parquet",
+      "rows": 9,
+      "sha256": "86a376b9566aa49def4cebb3dd6c9d9f0253fc1ea0b96817b59b7843a895c715"
+    },
+    {
+      "artifact": "stock_basic",
+      "bytes": 7108,
+      "partition": {},
+      "path": "tables/stock_basic/part-00000.parquet",
+      "rows": 3,
+      "sha256": "48f0b64471c00376c24e60942a4be284de38a62be9a507d627a0a40e0bdc3dbb"
+    },
+    {
+      "artifact": "stock_st",
+      "bytes": 3573,
+      "partition": {
+        "year": "2024"
+      },
+      "path": "tables/stock_st/year=2024/part-00000.parquet",
+      "rows": 1,
+      "sha256": "c395c7667a3c22a97ec832a5790a9bd0b2bbb18738f8c5c336af242c447fcd7f"
+    },
+    {
+      "artifact": "suspend_d",
+      "bytes": 3122,
+      "partition": {
+        "year": "2024"
+      },
+      "path": "tables/suspend_d/year=2024/part-00000.parquet",
+      "rows": 2,
+      "sha256": "34e2c7599255bdc7eaead8ac5f8120057a5efbb2995310fa48d0bd29f6ed29e2"
+    },
+    {
+      "artifact": "trade_cal",
+      "bytes": 3156,
+      "partition": {
+        "year": "2024"
+      },
+      "path": "tables/trade_cal/year=2024/part-00000.parquet",
+      "rows": 9,
+      "sha256": "ac5334dc453ee648844441bed64b91877276d4cfff07f949dc55e10f612590f8"
+    },
+    {
+      "artifact": "daily_hfq",
+      "bytes": 8578,
+      "partition": {
+        "year": "2024"
+      },
+      "path": "views/daily_hfq/year=2024/part-00000.parquet",
+      "rows": 8,
+      "sha256": "f1470450277173cd2063e10ebe1992d3f30b389271926186a69cbf9f2c4d21e7"
+    },
+    {
+      "artifact": "training_view_hfq",
+      "bytes": 24429,
+      "partition": {
+        "year": "2024"
+      },
+      "path": "views/training_view_hfq/year=2024/part-00000.parquet",
+      "rows": 9,
+      "sha256": "ba750c7d5e1f4ef7fae8f2cae5e153d3a56a33da08a909ad41b0c9391ce40477"
+    },
+    {
+      "artifact": "universe_history",
+      "bytes": 2402,
+      "partition": {
+        "year": "2024"
+      },
+      "path": "views/universe_history/year=2024/part-00000.parquet",
+      "rows": 9,
+      "sha256": "ef3605f0b6db4edf71c45bbba220319653d66e2123cd7a612765ba4b22b9862c"
+    }
+  ],
+  "manifest_version": 1,
+  "name": "ashare_daily_cross_section_demo_v1",
+  "source_snapshot": {
+    "fingerprint": "50a75177a62d226fcbca1ddffc9678aa0446b6c064205951e9d10f4b8a5387aa",
+    "tables": {
+      "adj_factor": {
+        "date_coverage": {
+          "end": "20240104",
+          "start": "20240102"
+        },
+        "logical_sha256": "22a4ad8f9a9da915156ca266512a82c456477a86842b5c685ef44c165929776e",
+        "rows": 9
+      },
+      "daily": {
+        "date_coverage": {
+          "end": "20240104",
+          "start": "20240102"
+        },
+        "logical_sha256": "73f2af71c3bb2880b16e32a7e2bb24f5d4a3109484efb954865663a1febbb840",
+        "rows": 8
+      },
+      "daily_basic": {
+        "date_coverage": {
+          "end": "20240104",
+          "start": "20240102"
+        },
+        "logical_sha256": "4df809bd3d72f5729bd37102444a8e0bf9743b5148bf62e4c393dc10c5b3a34e",
+        "rows": 9
+      },
+      "stk_limit": {
+        "date_coverage": {
+          "end": "20240104",
+          "start": "20240102"
+        },
+        "logical_sha256": "5bd3ac735abfd66aeda9cd76f3c478e51e34fa2a7a055d5f41ea956e9cf93426",
+        "rows": 9
+      },
+      "stock_basic": {
+        "date_coverage": null,
+        "logical_sha256": "098c4f7bbc3221ca89a7196f4f110948ea6929c23d447a6580fd46ec1b4d70db",
+        "rows": 3
+      },
+      "stock_st": {
+        "date_coverage": {
+          "end": "20240103",
+          "start": "20240103"
+        },
+        "logical_sha256": "77496412f3c2849f7546af45a9999334e3bb5e9b575c06763ea6dea1aa5901af",
+        "rows": 1
+      },
+      "suspend_d": {
+        "date_coverage": {
+          "end": "20240104",
+          "start": "20240104"
+        },
+        "logical_sha256": "4f7244a14e6f738da9ad38a1ad0a6d16e327a93123a9bf0b7027c93bb40ee6b7",
+        "rows": 2
+      },
+      "trade_cal": {
+        "date_coverage": {
+          "end": "20240104",
+          "start": "20240102"
+        },
+        "logical_sha256": "4df671ffd5596adb3eb04101489248c070e4177a582b10e85a73dea7c64d9eba",
+        "rows": 9
+      }
+    }
+  },
+  "spec": {
+    "adjustment": {
+      "change_policy": "recomputed_from_adjusted_close_and_pre_close",
+      "formula": "adjusted_price = raw_price * adj_factor",
+      "kind": "hfq",
+      "missing_policy": "no_forward_fill",
+      "price_columns": [
+        "open",
+        "high",
+        "low",
+        "close",
+        "pre_close"
+      ]
+    },
+    "date_range": {
+      "end": "20240104",
+      "start": "20240102"
+    },
+    "default_view": "training_view_hfq",
+    "name": "ashare_daily_cross_section_demo_v1",
+    "preset": {
+      "name": "ashare_daily_cross_section_demo",
+      "version": "1.0.0"
+    },
+    "schema_version": "1.0.0",
+    "splits": {},
+    "tables": {
+      "adj_factor": [
+        "ts_code",
+        "trade_date",
+        "adj_factor"
+      ],
+      "daily": [
+        "ts_code",
+        "trade_date",
+        "open",
+        "high",
+        "low",
+        "close",
+        "pre_close",
+        "change",
+        "pct_chg",
+        "vol",
+        "amount"
+      ],
+      "daily_basic": [
+        "ts_code",
+        "trade_date",
+        "turnover_rate",
+        "turnover_rate_f",
+        "volume_ratio",
+        "pe",
+        "pe_ttm",
+        "pb",
+        "ps",
+        "ps_ttm",
+        "dv_ratio",
+        "dv_ttm",
+        "total_share",
+        "float_share",
+        "free_share",
+        "total_mv",
+        "circ_mv"
+      ],
+      "stk_limit": [
+        "ts_code",
+        "trade_date",
+        "pre_close",
+        "up_limit",
+        "down_limit"
+      ],
+      "stock_basic": [
+        "ts_code",
+        "symbol",
+        "name",
+        "area",
+        "industry",
+        "market",
+        "exchange",
+        "list_status",
+        "list_date",
+        "delist_date",
+        "is_hs"
+      ],
+      "stock_st": [
+        "ts_code",
+        "trade_date",
+        "name",
+        "type",
+        "type_name"
+      ],
+      "suspend_d": [
+        "ts_code",
+        "trade_date",
+        "suspend_timing",
+        "suspend_type"
+      ],
+      "trade_cal": [
+        "exchange",
+        "cal_date",
+        "is_open",
+        "pretrade_date"
+      ]
+    },
+    "universe": {
+      "bse_start_date": "20211115",
+      "exchanges": [
+        "BSE",
+        "SSE",
+        "SZSE"
+      ],
+      "include_ts_codes": [
+        "999001.SZ",
+        "999002.SH",
+        "999003.BJ"
+      ],
+      "rule": "listed_on_trade_date; SH/SZ/BJ suffix; ST/suspend/limit retained",
+      "type": "all_historical_a_shares"
+    }
+  },
+  "spec_hash": "1e29d30064140379591f70c66fbf053d3561084c118990d24c6c7ac8422d24e5",
+  "splits": {},
+  "universe_rule": {
+    "bse_start_date": "20211115",
+    "exchanges": [
+      "BSE",
+      "SSE",
+      "SZSE"
+    ],
+    "include_ts_codes": [
+      "999001.SZ",
+      "999002.SH",
+      "999003.BJ"
+    ],
+    "rule": "listed_on_trade_date; SH/SZ/BJ suffix; ST/suspend/limit retained",
+    "type": "all_historical_a_shares"
+  },
+  "zer0share_version": "synthetic-demo-1.0"
+}

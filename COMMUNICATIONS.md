@@ -38,5 +38,6 @@
 
 - zer0share 为双方独立维护的只读本地库；仓库不携带数据库/真实包，不同步、不回源
 - canonical preset `ashare_daily_cross_section` v1 固化八表、历史时点沪深北全 A 股、raw+adj+HFQ、状态保留和无前填
-- 数据方构建并交付完整 package；合作者日常只按 path + split 读取，复现时仅提供 config/output
+- 数据方构建并交付完整 package；合作者日常按 path 读取全量面板并自行切分，复现时仅提供 config/output
 - 通用 spec/builder 保留给数据方开发新 preset；不生成特征、标签、张量、DataLoader 或训练改动
+- 仓库附带 3 个虚构标的、3 个交易日的纯合成离线 demo package，用于无 zer0share 环境验收接口与数据契约

@@ -29,16 +29,7 @@ tables:
     [ts_code, trade_date, suspend_timing, suspend_type]
   stk_limit:
     [ts_code, trade_date, pre_close, up_limit, down_limit]
-splits:
-  train:
-    start: "20100101"
-    end: "20221230"
-  validation:
-    start: "20230201"
-    end: "20231229"
-  test:
-    start: "20240201"
-    end: "20251231"
+splits: {}
 default_view: training_view_hfq
 output_dir: /replace/with/local/dataset-output
 zer0share:

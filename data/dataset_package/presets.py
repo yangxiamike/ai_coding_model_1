@@ -23,11 +23,7 @@ def standard_daily_spec(config_path, output_dir) -> DatasetSpec:
         fields={table: tuple(fields) for table, fields in DEFAULT_FIELDS.items()},
         exchanges=("SSE", "SZSE", "BSE"),
         include_ts_codes=(),
-        splits={
-            "train": {"start": "20100101", "end": "20221230"},
-            "validation": {"start": "20230201", "end": "20231229"},
-            "test": {"start": "20240201", "end": "20251231"},
-        },
+        splits={},
         default_view="training_view_hfq",
     )
 

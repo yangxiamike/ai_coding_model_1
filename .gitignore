@@ -2,6 +2,7 @@
 __pycache__/
 tmp*
 *.parquet
+!data/demo/**/*.parquet
 *.csv
 *.pt
 *.pth
